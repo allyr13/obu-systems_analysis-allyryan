@@ -3,6 +3,7 @@
 
 ### Dynamo DB Table Name
 Table Name: allyR_midTerm
+Primary Key (Partition key): ShapeID
 
 ### My 3 Endpoints
 - "http://localhost:3000/updateDB" populates DynamoDB with ShapeID, Shape Side Dimension, and Shape Volume.
@@ -13,9 +14,10 @@ Table Name: allyR_midTerm
 - "http://localhost:3000/queryData" queries the desired value based on the given paramaters.
     - It accepts two JSON bodies:
         1. {"wantedVal": value1}
+            - wantedVal is the column value desired: in this example (ShapeVolume, ShapeID, SideDimension)
         2. {"wantedVal": value2, "condition": value3, "conditionVal":value4, "operator": value5}
     - It returns the following JSON body to the client:
-        - {"wantedVal": outputVal1}
+        - {"wantedVal": outputVal}
 - "http://localhost:3000/updateShape" updates an item already existing in the table
     - It requires the following JSON body:
         - {"updateVal": idVal, "sideDimension" : sideVal}

@@ -64,6 +64,13 @@ data = r.json()
 print("Update volume for Shape102: ")
 print(data["status"])
 
+payload = {"updateVal": "Shape105", "sideDimension" : "25"}
+header = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+r = requests.post("http://localhost:3000/updateShape", json=payload, headers=header)
+data = r.json()
+print("Update volume for Shape105: ")
+print(data["status"])
+
 
 
 
