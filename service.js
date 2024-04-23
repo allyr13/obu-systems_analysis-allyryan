@@ -76,24 +76,44 @@ async function updateDB(theData) {
     try {
         log("Selecting an item.");
         let wantedVal = theJSON.wantedVal;
-        console.log("SELECTING " + wantedVal + " FROM THE TABLE");
-        //console.log("SELECTING * FROM THE TABLE");
-
-        const selectItemStatementCommand = new ExecuteStatementCommand({
-        // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ql-reference.select.html
-        Statement: `SELECT ${wantedVal} FROM \"allyR_midTerm\"`,
-        });
-
-        const selectItemResponse = await docClient.send(selectItemStatementCommand);
-        let items = "";
-        for (let i = 0; i < selectItemResponse.Items.length; i++) {
-            log(`Got results: ${JSON.stringify(selectItemResponse.Items[i])}`); 
-            items = items + JSON.stringify(selectItemResponse.Items[i]);
+        let condition = theJSON.condition;
+        let conditionVal = theJSON.conditionVal;
+        let operator = theJSON.operator;
+        console.log("SELECTING " + wantedVal + " FROM allyR_midTerm WHERE " + condition + " " + operator + " " + conditionVal);
+        if ((theJSON.hasOwnProperty("condition")) && (theJSON.hasOwnProperty("conditionVal"))) {
+            const selectItemStatementCommand = new ExecuteStatementCommand({
+                // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ql-reference.select.html
+                Statement: `SELECT ${wantedVal} FROM \"allyR_midTerm\" WHERE ${condition} ${operator} '${conditionVal}'`,
+                });
+                
+                const selectItemResponse = await docClient.send(selectItemStatementCommand);
+                let items = "";
+                for (let i = 0; i < selectItemResponse.Items.length; i++) {
+                    log(`Got results: ${JSON.stringify(selectItemResponse.Items[i])}`); 
+                    items = items + JSON.stringify(selectItemResponse.Items[i]);
+                }
+        
+                //console.log(result);
+                let returnVal = items;
+                return returnVal;
         }
-
-        //console.log(result);
-        let returnVal = items;
-        return returnVal;
+        else {
+            const selectItemStatementCommand = new ExecuteStatementCommand({
+                // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ql-reference.select.html
+                Statement: `SELECT ${wantedVal} FROM \"allyR_midTerm\"`,
+                });
+        
+                const selectItemResponse = await docClient.send(selectItemStatementCommand);
+                let items = "";
+                for (let i = 0; i < selectItemResponse.Items.length; i++) {
+                    log(`Got results: ${JSON.stringify(selectItemResponse.Items[i])}`); 
+                    items = items + JSON.stringify(selectItemResponse.Items[i]);
+                }
+        
+                //console.log(result);
+                let returnVal = items;
+                return returnVal;
+        }
 
 } catch (err) {
         console.log(err);

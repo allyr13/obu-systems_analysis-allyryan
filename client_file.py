@@ -43,11 +43,18 @@ data = r.json()
 print("Insert empty data attempt: ")
 print(data["status"])
 
-payload1 = {"wantedVal": "ShapeVolume"}
+payload = {"wantedVal": "ShapeVolume"}
 header = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-r1 = requests.post("http://localhost:3000/queryData", json=payload1, headers=header)
-data = r1.json()
-print("Query for shapeVolume: ")
+r = requests.post("http://localhost:3000/queryData", json=payload, headers=header)
+data = r.json()
+print("Query results for shapeVolume: ")
+print(data)
+
+payload = {"wantedVal": "ShapeVolume", "condition": "ShapeID", "conditionVal":"Shape103", "operator": "="}
+header = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+r = requests.post("http://localhost:3000/queryData", json=payload, headers=header)
+data = r.json()
+print("Query results for: ShapeVolume WHERE ShapeID = Shape103 ")
 print(data)
 
 payload = {"updateVal": "Shape102", "sideDimension" : "30"}
@@ -56,5 +63,7 @@ r = requests.post("http://localhost:3000/updateShape", json=payload, headers=hea
 data = r.json()
 print("Update volume for Shape102: ")
 print(data["status"])
+
+
 
 
