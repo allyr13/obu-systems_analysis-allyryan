@@ -1,9 +1,13 @@
 # obu-systems_analysis-allyryan
 ## Midterm Exam
 
-### Dynamo DB Table Name
-Table Name: allyR_midTerm
+### AWS Info
+DynamoDB Table Name: allyR_midTerm
 Primary Key (Partition key): ShapeID
+Container Image Name: allyryan_finalexam
+Service Name: allyryan_finalexam
+Default Domain: https://2xfhk9btb9.us-east-2.awsapprunner.com 
+
 
 ### My 3 Endpoints
 - "http://localhost:4040/updateDB" : POST method populates DynamoDB with ShapeID, Shape Side Dimension, and Shape Volume. 
