@@ -45,9 +45,12 @@ Default Domain: https://2xfhk9btb9.us-east-2.awsapprunner.com
 - Open first terminal
 #### Run Service 
 - Run `service.js` in the command line with `node service.js`
-#### Run Client File
+#### Run Local Client File
 - Open a second terminal 
 - Run `client_file.py` in the command line with `python client_file.py`
+#### Run Local Client File
+- Open a second terminal 
+- Run `AWSclient_file.py` in the command line with `python client_file.py`
 #### Run unit tests
 - Open a third terminal 
 - Run `testing_client.py` in the command line with `python testing_client.py` 
