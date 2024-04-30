@@ -4,9 +4,47 @@
     <meta charset="UTF-8">
     <title>Shape Table</title>
     <link rel="stylesheet" type="text/css" href="/css.css">
+    <style>
+      table{
+        border-collapse: collapse; 
+      }
+
+      td{
+        text-align: center;
+        padding-left: 1px;
+        padding: 6px;
+        border-left: 2px solid black;
+        border-right: 2px solid black;
+      }
+      th{
+        padding: 10px;
+        text-align: center;
+        border:2px solid black;
+      }
+      tr{
+        text-align: center;
+        border-bottom: 1pt solid black;
+      }
+      div{
+        width: 75%;
+        margin: auto;
+        justify-content: center;
+	      display: flex; 
+	      align-items: center; 
+      }
+
+      td:first-child {
+            padding-right: 10px;
+        }
+ 
+        td:last-child {
+            padding-left: 10px;
+        }
+    </style>
 </head>
 
 <body id="body">
+  <h1 style="text-align:center">Table Shape Data</h1>
     <div id="tableArea" style="background-color: beige; border: 2px solid black; text-align: center;"></div>
       <script>
         addEventListener("DOMContentLoaded", async function() {
