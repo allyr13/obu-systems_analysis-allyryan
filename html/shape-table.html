@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Shape Table</title>
+    <link rel="stylesheet" type="text/css" href="/css.css">
+</head>
+
+<body id="body">
+    <div id="tableArea" style="background-color: beige; border: 2px solid black; text-align: center;"></div>
+      <script>
+        addEventListener("DOMContentLoaded", async function() {
+        console.log("Requesting data ...")
+        const response = await fetch("http://localhost:4040/getQueryData", {
+        method: "GET"
+          });
+        console.log("Response received")
+        const jsonData = await response.json();
+        console.log(jsonData);
+           
+        let tblArea = document.getElementById("tableArea");
+        let table = document.createElement("table");
+        
+        let cols = Object.keys(jsonData.Items[0]);
+        let thead = document.createElement("thead");
+        let tr = document.createElement("tr");
+        cols.forEach((item) => {
+            let th = document.createElement("th");
+            th.innerText = item;
+            tr.appendChild(th);
+        });
+
+        
+        thead.appendChild(tr);
+        table.append(tr);
+        jsonData.Items.forEach((item) => {
+          let tr = document.createElement("tr");
+          let vals = Object.values(item);
+          vals.forEach((elem) => {
+            let td = document.createElement("td");
+            td.innerText = elem; 
+            tr.appendChild(td);
+          });
+          table.appendChild(tr);
+
+        });
+        tblArea.appendChild(table);
+      });
+    
+     </script>
+     
+  </body>
+    
+
+    
+</html>

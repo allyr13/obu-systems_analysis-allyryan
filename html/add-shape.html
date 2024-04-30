@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Shape</title>
+    <h1>Add a shape</h1>
+</head>
+
+<body>
+    <section class="new-shape">
+        <script>
+            function validateForm() {
+                const sideDim = document.getElementById("sideDimension").value;
+                if (sideDim === '') {
+                    alert("Please enter a side dimension");
+                    return false;
+                }
+
+                const shapeid = document.getElementById('shapeID').value;
+                if (shapeid === '') {
+                    alert("Please enter an ID in this format: 'Shapexyz");
+                    return false;
+                }
+
+                return true;
+            }
+
+            function handleFormSubmit(event) {
+                event.preventDefault();
+                if (!validateForm()){
+                    let result = {status: "failed", description: "missing inputs"}
+                    console.log(result);
+                }
+                if(validateForm())
+                    event.preventDefault();
+
+                    const data = new FormData(event.target);
+                    
+                    const formJSON = Object.fromEntries(data.entries());
+                    formJSON.shape = data.getAll('shape');
+                    console.log(formJSON);
+            }
+
+            function addedShape(){
+                event.preventDefault();
+                if (validateForm){
+                    let status = document.getElementById("status");
+                    status.textContent = "Shape Added";
+                    console.log("added paragraph");
+                }
+            }
+            
+            const form = document.querySelector('.new-shape');
+            form.addEventListener('submit', handleFormSubmit);
+            form.addEventListener('submit', addedShape)
+            form.addEventListener('submit', async function() {
+                if (validateForm){
+                    console.log("Posting data ...")
+                    const data = new FormData(event.target);
+                    const formJSON = Object.fromEntries(data.entries());
+                    formJSON.shape = data.getAll('shape');
+                    jsonString = JSON.stringify(formJSON, null, 2)
+
+                    console.log(jsonString)
+                    const response = await fetch("/addShape", {
+                        method: "POST",
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: jsonString
+                    });
+                    console.log("Response received")
+                    const theData = await response.json();
+                    
+                    console.log(theData)
+                    
+                }
+            });
+        </script>
+
+        <form>
+            <div class="input-vals">
+                <label for="sideDimension">Shape Side Dimension</label>
+                <br>
+                <input type="number" id="sideDimension" name="sideDimension" min="0" required>
+            </div>
+            
+                <label for="shapeID" id="experimentNameLabel">Enter Shape ID: 'ShapeIDxxx'</label>
+                <br>
+                <input id="shapeID" name="shapeID" type="text" pattern="^Shape[0-9]{3}$" required maxlength="8">
+            </div>
+            <div class="input-vals">
+                <br>
+                <button class= "input-group" type="submit" id = "createShapeButton">Create Shape</button>
+            </div>
+            </form>
+    </section>
+        <div class="status">
+            <p id="status"></p>
+        </div>
+</body>
+</html>

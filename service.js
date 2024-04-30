@@ -1,8 +1,5 @@
 import {
-    DynamoDBClient,
-    ListTablesCommand,
-    UpdateItemCommand,
-    DeleteItemCommand,
+    DynamoDBClient
   } from "@aws-sdk/client-dynamodb";
 import {
   PutCommand,
@@ -11,6 +8,7 @@ import {
   ExecuteStatementCommand,
 } from "@aws-sdk/lib-dynamodb";
 
+import clientDynamoLib from '@aws-sdk/lib-dynamodb';
 import { v4 as uuidv4 } from 'uuid';
 import express from "express" // ALWAYS - npm install express needed
 import bodyParser from "body-parser";
@@ -18,11 +16,20 @@ import bodyParser from "body-parser";
 
 const app = express() // ALWAYS
 app.use(bodyParser.json());
+
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 const log = (msg) => console.log(`[SCENARIO] ${msg}`);
 const tableName = "allyR_midTerm"; // Table in DynamoDB
 
 const client = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(client);
+
+
 
 // populating table with ShapeID, ShapeVolume, SideDimension
 async function updateDB(theData) {
@@ -61,9 +68,8 @@ async function updateDB(theData) {
     
             return result;  
     } catch (err) {
-            console.log(err);
             const result = {
-            status: "Failure"
+            status: "Failure",
             };
     
             return result;  
@@ -87,6 +93,7 @@ async function updateDB(theData) {
                 });
                 
                 const selectItemResponse = await docClient.send(selectItemStatementCommand);
+                
                 let items = "";
                 for (let i = 0; i < selectItemResponse.Items.length; i++) {
                     log(`Got results: ${JSON.stringify(selectItemResponse.Items[i])}`); 
@@ -104,15 +111,15 @@ async function updateDB(theData) {
                 });
         
                 const selectItemResponse = await docClient.send(selectItemStatementCommand);
-                let items = "";
+                let items;
                 for (let i = 0; i < selectItemResponse.Items.length; i++) {
-                    log(`Got results: ${JSON.stringify(selectItemResponse.Items[i])}`); 
-                    items = items + JSON.stringify(selectItemResponse.Items[i]);
-                }
-        
-                //console.log(result);
-                let returnVal = items;
-                return returnVal;
+                  log(`Got results: ${JSON.stringify(selectItemResponse.Items[i])}`); 
+                  items = items + JSON.stringify(selectItemResponse.Items[i]);
+              }
+      
+              //console.log(result);
+                //console.log(selectItemResponse)
+                return selectItemResponse;
         }
 
 } catch (err) {
@@ -125,88 +132,115 @@ async function updateDB(theData) {
 }
 };
 
-// deletes and re-populates desired val
+// uses updateCommand to update the item in the table
 async function updateShape (theJSON){
-    try {
-            let updateID = theJSON.updateVal;
-            // deleting val
-            const command = new DeleteItemCommand({
-              TableName: "allyR_midTerm",
-              Key: {
-                ShapeID: { S: updateID },
-              },
-            });
-            const response = await client.send(command);
-            console.log(response);
-
-            // re-populating this ID with new side dimension/volume
-            var sideDimension = theJSON.sideDimension
-            updateDB({"shapeID": updateID, "sideDimension": sideDimension});
-
-            let returnVal = {status: "Update successful"};
-            return returnVal;
+    try{
+        const command = new UpdateCommand({
+          TableName: tableName,
+          Key: {
+            ShapeID: theJSON.shapeID,
+          },
+          UpdateExpression: "set SideDimension = :SideDimension",
+          ExpressionAttributeValues: {
+            ":SideDimension": theJSON.sideDimension,
+          },
+          ReturnValues: "ALL_NEW",
+        });
+      
+        const response = await docClient.send(command);
+        console.log(response);
+        response["status"] = "Update success"
+        return response;
 
 } catch (err) {
-        console.log(err);
-        const result = {
-        status: "Update failure"
-        };
+    console.log(err);
+    const result = {
+    status: "Update failure"
+    };
 
-        return result;  
-}
-};
+    return result;  
+}};
 
-// route for query
-app.post("/queryData", function (req,res){
+// post route for query data
+app.post("/getQueryData", function (req,res){
     console.log("/queryData with " + req.body)
     queryData(req.body).then(function(returnVal) {
         console.log("Returned " + returnVal);
-        // send() method returns HTML to the caller / client 
         res.json(returnVal);
       });
 });
 
-// route for populating DynamoDB
+
+// get route for getting json query data
+app.get("/getQueryData", async function (req,res){
+    console.log(req.headers)
+    console.log("Processing " + req.url)
+    const selectItemStatementCommand = new clientDynamoLib.ExecuteStatementCommand({
+        Statement: `SELECT * FROM allyR_midTerm`
+    });
+    console.log("Selected all values from allyR_midTerm");
+    const selectItemResponse = await docClient.send(selectItemStatementCommand);
+    for (let i = 0; i < selectItemResponse.Items.length; i++) {
+        console.log(`Got results: ${JSON.stringify(selectItemResponse.Items[i])}`);
+    }
+    console.log("Got all values from Experiment successfully!");
+    res.json(selectItemResponse);
+});
+
+// get route for table data (html)
+app.get("/queryData", function (req,res){
+  res.sendFile(__dirname + "/html/shape-table.html");
+});
+
+// post for query data
+app.post("/queryData", function (req,res){
+  console.log("/queryData with " + req.body)
+  queryData(req.body).then(function(returnVal) {
+      console.log("Returned " + returnVal);
+      // send() method returns HTML to the caller / client 
+      res.json(returnVal);
+    });
+});
+
+// post route for populating DynamoDB
 app.post("/updateDB", function(req, res) {
   console.log("/updateDB with " + req.body)
   updateDB(req.body).then(function(returnVal) {
     console.log("Returned " + returnVal);
-    // send() method returns HTML to the caller / client 
     res.json(returnVal);
   });
 });
 
-// route for updating shape 
-app.post('/updateShape', function(req,res){
-    console.log("/updateDB with " + req.body)
-    updateShape(req.body).then(function(returnVal) {
-        console.log("Returned " + returnVal);
-        // send() method returns HTML to the caller / client 
-        res.json(returnVal);
+// get route for adding shape 
+app.get('/addShape', function(req,res){
+    res.sendFile(__dirname + "/html/add-shape.html")
+  });
+
+// post route for adding shape
+app.post('/addShape', function(req,res){
+    console.log("Saving shape")
+    updateDB(req.body).then(function(returnVal) {
+      console.log("Returned " + returnVal);
+      res.json(returnVal);
     });
-});
+})
 
+// get route for update shape
+app.get("/updateShape", function (req,res){
+    res.sendFile(__dirname + "/html/update-shape.html")
+})
 
+// post route for update shape
+app.post('/updateShape', function(req,res){
+    updateShape(req.body).then(function(returnVal) {
+      console.log("Returned " + returnVal);
+      res.json(returnVal);
+    });
+    console.log("Shape updated")
+})
 
-app.get("/", function(req, res) {
-  let html = "<h1>get /</h1>"
-  console.log("get /");
-  res.send(html)
-});
-
-app.put("/", function(req, res) {
-  let html = "<h1>put /</h1>"
-  console.log("put /");
-  res.send(html)
-});
-
-app.post("/", function(req, res) {
-  let html = "<h1>post /</h1>"
-  console.log("post /");
-  res.send(html)
-});
 
 // START A SERVER 
-app.listen(3000, function() {
-    console.log("Listening on port 3000..."); // RECOMMENDED
+app.listen(4040, function() {
+    console.log("Listening on port 4040..."); // RECOMMENDED
  });

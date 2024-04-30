@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Shape</title>
+    <h1>Update a shape</h1>
+</head>
+
+<body>
+    <section class="update-shape">
+        <script>
+            addEventListener("DOMContentLoaded", async function() {
+                console.log("Requesting data ...")
+                const response = await fetch("http://localhost:4040/getQueryData", {
+                method: "GET"
+                });
+                console.log("Response received")
+                const jsonData = await response.json();
+                let optionMenu = document.getElementById("choose-shape")
+                jsonData.Items.forEach((item) => {
+                    var options = document.createElement("option");
+                    options.value = item.ShapeID;
+                    console.log(item.ShapeID);
+                    options.textContent = item.ShapeID;
+                    optionMenu.appendChild(options);
+                    
+                });
+
+
+            });
+
+            function validateForm() {
+                const sideDim = document.getElementById("sideDimension").value;
+                if (sideDim === '') {
+                    alert("Please enter a side dimension");
+                    return false;
+                }
+                return true;
+            }
+
+            function handleFormSubmit(event) {
+                event.preventDefault();
+                if (!validateForm()){
+                    let result = {status: "failed", description: "missing inputs"}
+                    console.log(result);
+                }
+                if(validateForm())
+                    event.preventDefault();
+
+                    const data = new FormData(event.target);
+                    
+                    const formJSON = Object.fromEntries(data.entries());
+                    formJSON.shape = data.getAll('shape');
+            }
+
+            function addedShape(){
+                event.preventDefault();
+                if (validateForm){
+                    let status = document.getElementById("status");
+                    status.textContent = "Shape Updated";
+                    console.log("added paragraph");
+                }
+            }
+            const form = document.querySelector('.update-shape');
+            form.addEventListener('submit', handleFormSubmit);
+            form.addEventListener('submit', handleFormSubmit);
+            form.addEventListener('submit', addedShape)
+
+            form.addEventListener('submit', async function() {
+                let shapeID = document.getElementById("choose-shape").value;
+                if (validateForm){
+                    console.log("Updating data ...")
+                    const data = new FormData(event.target);
+                    const formJSON = Object.fromEntries(data.entries());
+                    jsonString = JSON.stringify(formJSON, null, 2)
+
+                    console.log(jsonString)
+                    const response = await fetch("/updateShape", {
+                        method: "POST",
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: jsonString
+                    });
+                    console.log("Response received")
+                    const theData = await response.json();
+                    
+                    console.log(theData)
+                    
+                }
+            });
+
+        </script>
+
+        <form>
+            <div class="input-vals">
+                <label for="choose-shape">Choose a shape to update:</label> 
+                <select id="choose-shape" required name="shapeID"></select>
+            </div>
+            <br>
+            <div class="input-vals">
+                <label for="sideDimension">New Side Dimension:</label>
+                <input type="number" id="sideDimension" name="sideDimension" min="0" required>
+            </div>
+            <div  class="input-vals">
+                <br>
+                <button class= "input-group" type="submit" id="updateShape">Update Shape</button>
+            </div>
+        </form>
+    </section>
+        <div class="status">
+            <p id="status"></p>
+        </div>
+</body>
+</html>
