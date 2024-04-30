@@ -7,7 +7,7 @@ class TestDemo(unittest.TestCase):
     def test_001(self):
         payload = { "shapeID": "Shape101", "sideDimension" : "7"}
         header = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-        r = requests.post("http://localhost:4040/updateDB", json=payload, headers=header)
+        r = requests.post("https://2xfhk9btb9.us-east-2.awsapprunner.com/updateDB", json=payload, headers=header)
         data = json.loads(r.text)
         answer = data["status"]
         self.assertEqual(answer, "Success")
@@ -15,7 +15,7 @@ class TestDemo(unittest.TestCase):
     def test_002(self):
         payload = { "shapeID": "Shape102", "sideDimension" : "24"}
         header = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-        r = requests.post("http://localhost:4040/updateDB", json=payload, headers=header)
+        r = requests.post("https://2xfhk9btb9.us-east-2.awsapprunner.com/updateDB", json=payload, headers=header)
         data = r.json()
         answer = data["status"]
         self.assertEqual(answer, "Success")
@@ -23,7 +23,7 @@ class TestDemo(unittest.TestCase):
     def test_003(self):
         payload = { "shapeID": "Shape103", "sideDimension" : "10"}
         header = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-        r = requests.post("http://localhost:4040/updateDB", json=payload, headers=header)
+        r = requests.post("https://2xfhk9btb9.us-east-2.awsapprunner.com/updateDB", json=payload, headers=header)
         data = r.json()
         answer = data["status"]
         self.assertEqual(answer, "Success")
@@ -31,7 +31,7 @@ class TestDemo(unittest.TestCase):
     def test_004(self):
         payload = {}
         header = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-        r = requests.post("http://localhost:4040/updateDB", json=payload, headers=header)
+        r = requests.post("https://2xfhk9btb9.us-east-2.awsapprunner.com/updateDB", json=payload, headers=header)
         data = r.json()
         answer = data["status"]
         self.assertEqual(answer, "Failure")
@@ -39,7 +39,7 @@ class TestDemo(unittest.TestCase):
     def test_005(self):
         payload = {"wantedVal": "ShapeVolume", "condition": "ShapeID", "conditionVal":"Shape103", "operator": "="}
         header = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-        r = requests.post("http://localhost:4040/queryData", json=payload, headers=header)
+        r = requests.post("https://2xfhk9btb9.us-east-2.awsapprunner.com/queryData", json=payload, headers=header)
         data = r.json()
         answer = data
         self.assertEqual(answer, '{"ShapeVolume":1000}')
@@ -47,7 +47,7 @@ class TestDemo(unittest.TestCase):
     def test_006(self):
         payload = {"shapeID": "Shape102", "sideDimension" : "30"}
         header = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-        r = requests.post("http://localhost:4040/updateShape", json=payload, headers=header)
+        r = requests.post("https://2xfhk9btb9.us-east-2.awsapprunner.com/updateShape", json=payload, headers=header)
         data = r.json()
         answer = data["Attributes"]["ShapeVolume"]
         ## this is new volume and proves the update
@@ -56,7 +56,7 @@ class TestDemo(unittest.TestCase):
     def test_007(self):
         payload = {"shapeID": "Shape102", "sideDimension" : "30"}
         header = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-        r = requests.post("http://localhost:4040/updateShape", json=payload, headers=header)
+        r = requests.post("https://2xfhk9btb9.us-east-2.awsapprunner.com/updateShape", json=payload, headers=header)
         data = r.json()
         answer = data["status"]
         ## this is new volume and proves the update
@@ -65,7 +65,7 @@ class TestDemo(unittest.TestCase):
     def test_008(self):
         payload = {"wantedVal": "Shape102", "sideDimension" : "30"}
         header = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-        r = requests.post("http://localhost:4040/updateShape", json=payload, headers=header)
+        r = requests.post("https://2xfhk9btb9.us-east-2.awsapprunner.com/updateShape", json=payload, headers=header)
         data = r.json()
         answer = data["status"]
         ## this is new volume and proves the update
@@ -74,7 +74,7 @@ class TestDemo(unittest.TestCase):
     def test_009(self):
         payload = { "shapeID": "Shape244", "sideDimension" : "94"}
         header = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-        r = requests.post("http://localhost:4040/addShape", json=payload, headers=header)
+        r = requests.post("https://2xfhk9btb9.us-east-2.awsapprunner.com/addShape", json=payload, headers=header)
         data = json.loads(r.text)
         answer = data["status"]
         self.assertEqual(answer, "Success")
@@ -83,7 +83,7 @@ class TestDemo(unittest.TestCase):
         ## JSON key error
         payload = { "shaPeID": "Shape244", "sideDimension" : "94"}
         header = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-        r = requests.post("http://localhost:4040/addShape", json=payload, headers=header)
+        r = requests.post("https://2xfhk9btb9.us-east-2.awsapprunner.com/addShape", json=payload, headers=header)
         data = json.loads(r.text)
         answer = data["status"]
         self.assertEqual(answer, "Failure")
@@ -92,7 +92,7 @@ class TestDemo(unittest.TestCase):
         ## Bad data
         payload = { "shapeID": 23, "sideDimension" : "Shape2"}
         header = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-        r = requests.post("http://localhost:4040/addShape", json=payload, headers=header)
+        r = requests.post("https://2xfhk9btb9.us-east-2.awsapprunner.com/addShape", json=payload, headers=header)
         data = json.loads(r.text)
         answer = data["status"]
         self.assertEqual(answer, "Failure")
